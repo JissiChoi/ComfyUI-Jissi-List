@@ -2,16 +2,23 @@ import { app } from "../../scripts/app.js";
 import { ComfyWidgets } from "../../scripts/widgets.js";
 
 // 텍스트 디스플레이 사용 노드
-const TEXT_DISPLAY_NODES = ["JissiView", "JissiMultiplePrompts", "JissiTextFileToListDisplay"]; //"JissiText", "JissiTextTemplate"
+const TEXT_DISPLAY_NODES = ["JissiView", "JissiMultiplePrompts", "JissiTextFileToListDisplay", "JissiMatching", "JissiText", "JissiTextTemplate"];
 
 // 공통으로 사용할 텍스트 디스플레이 로직
+/**
+ * Creates a text display for a given node type and node data.
+ * @param {Function} nodeType - The type of the node.
+ * @param {Object} nodeData - The data associated with the node.
+ */
 const createTextDisplay = (nodeType, nodeData) => {
     function populate(text) {
         if (this.widgets) {
-            for (let i = 1; i < this.widgets.length; i++) {
-                this.widgets[i].onRemove?.();
+            for (let i = this.widgets.length - 1; i >= 0; i--) {
+                if (this.widgets[i].type === 'customtext') {
+                    this.widgets[i].onRemove?.();
+                    this.widgets.splice(i, 1);
+                }
             }
-            this.widgets.length = 1;
         }
 
         const v = [...text];
